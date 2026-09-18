@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
+/*
+ * Vinclair 디자인 바탕 — 크림색 배경, 짙은 와인색 포인트, 넓은 여백
+ * 참고 방향: Ridge Vineyards(미니멀) + Ruinart(에디토리얼) 사이 (2026-09-17 사용자 선택)
+ * 배경이 브랜드 분위기의 중심이라 다크 모드는 두지 않는다.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f2ea; /* 크림색 배경 */
+  --foreground: #2b2320; /* 따뜻한 짙은 갈색 글자 */
+  --wine: #6b1e2e; /* 포인트 — 짙은 와인색 */
+  --wine-soft: #f1e4e2; /* 와인색을 옅게 풀어낸 바탕 */
+  --line: #e4d9ca; /* 얇은 구분선 */
+  --surface: #fbf8f3; /* 카드처럼 살짝 떠 보이는 면 */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-wine: var(--wine);
+  --color-wine-soft: var(--wine-soft);
+  --color-line: var(--line);
+  --color-surface: var(--surface);
+  /* 본문: 영문·숫자는 Jost, 한글은 Noto Sans KR (layout.tsx에서 불러옴) — Ruinart의 Riviera Nights 느낌 */
+  --font-sans:
+    var(--font-jost), var(--font-noto-sans-kr), -apple-system, "Apple SD Gothic Neo",
+    "Malgun Gothic", system-ui, sans-serif;
+  /* 제목: 영문·숫자는 Cormorant Garamond, 한글은 Noto Serif KR — Ruinart의 Saol 느낌 */
+  --font-serif:
+    var(--font-cormorant), var(--font-noto-serif-kr), "AppleMyungjo", "Batang", serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  /* 세리프 글꼴의 숫자가 작게 들쭉날쭉(옛 숫자 모양)하지 않고 가지런하게 보이도록 */
+  font-variant-numeric: lining-nums;
 }

@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vinclair 🍷
 
-## Getting Started
+**와인 라벨 사진 한 장으로, 그 와인이 무엇인지 한국어로 알려주는 웹 앱**
 
-First, run the development server:
+매장 진열대 앞에서 와인 앱을 뒤지고 검색을 반복하던 5분을, 라벨 사진 한 장으로 줄이기 위해 만들었습니다.
+사진을 올리면 AI가 라벨을 읽어 와인을 식별하고, 웹 검색으로 확인한 정보를 **간략 설명(3문장)** 과 **9개 항목 상세 정보**로 정리해 보여줍니다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 접속 주소: https://vinclair.vercel.app
+- 만든 사람: Yoonjeong
+
+---
+
+## 주요 기능
+
+| 단계 | 하는 일 |
+|---|---|
+| 1. 사진 올리기 | 휴대폰으로 라벨을 찍거나 사진을 고릅니다 (4MB 이하 JPG/PNG) |
+| 2. 와인 식별 | AI가 라벨에서 와인명·생산자·빈티지를 읽고 "이 와인이 맞나요?"를 묻습니다. 틀렸으면 **[이름 고치기]** 로 일부만 고칠 수 있습니다 |
+| 3. 결과 보기 | 초보자를 위한 **간략 설명** 과 중급자를 위한 **9개 항목** 을 보여줍니다 |
+| 4. 더 보기 | 생산지 지도, 비슷한 와인 추천(최대 3병), 결과 링크 공유 |
+
+**9개 항목**: 생산 국가·지역 · 포도 품종 및 블렌딩 비율 · 맛과 향 · 제조 방법 · 시음 적기 · 어울리는 음식 · 평론가 평점 · 생산자 정보 · 등급
+
+### 정보를 지어내지 않기 위한 장치
+
+- 웹 검색으로 **실제로 열어본 페이지만** 출처로 남기고, 출처를 누르면 그 페이지로 이동합니다
+- 근거를 찾지 못한 항목은 `정보 없음`, 원래 존재하지 않는 정보(예: 미국 와인의 등급)는 `해당 없음 (이유)`로 표시합니다
+- 간략 설명의 모든 사실이 9개 항목에 실제로 있는지 코드가 대조하고, 근거가 없는 표현은 빼고 보여줍니다
+- 다른 빈티지의 정보를 썼으면 `(2015년 빈티지 기준)`처럼 기준 연도를 표시합니다
+
+---
+
+## 기술 스택
+
+| 구분 | 사용 기술 |
+|---|---|
+| 프레임워크 | Next.js 16 (App Router), React 19, TypeScript |
+| 화면 | Tailwind CSS v4 |
+| AI | OpenAI Responses API (라벨 판독 + 웹 검색) |
+| 데이터 검사 | zod |
+| 지도 | OpenStreetMap (Nominatim 위치 검색 + 지도 삽입) |
+| 배포 | Vercel |
+
+로그인·데이터베이스가 없고, **올린 사진은 저장하지 않습니다** (디스크·DB·로그 어디에도 남기지 않음).
+
+---
+
+## 폴더 구조
+
+```
+src/
+├── app/
+│   ├── page.tsx              # 단계별 화면 전환 (업로드 → 확인 → 결과)
+│   └── api/
+│       ├── identify/route.ts # 라벨 사진 → 와인 식별
+│       └── details/route.ts  # 와인 → 간략 설명 + 9개 항목 (웹 검색)
+├── components/               # 화면 조각 (업로드, 확인, 이름 입력, 진행 표시, 결과)
+├── lib/
+│   ├── ai/                   # AI 규칙 원문, 답 모양 검사, 간략 설명 검사
+│   ├── rate-limit.ts         # 사용 횟수 제한
+│   ├── share.ts              # 결과 링크 공유 (결과를 주소 # 뒤에 담음)
+│   ├── geocode.ts            # 생산지 위치 찾기
+│   └── upload-rules.ts       # 업로드 조건 검사
+└── types/wine.ts             # 화면과 서버가 주고받는 데이터 모양
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+기획·설계 문서도 함께 들어 있습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| 문서 | 내용 |
+|---|---|
+| [PRD.md](PRD.md) | 무엇을 왜 만드는지 — 문제, 목표, 기능, AI가 지킬 규칙 |
+| [PLAN.md](PLAN.md) | 이번 사이클의 목표·성공 기준·작업 목록 |
+| [DESIGN.md](DESIGN.md) | 화면 구성, 데이터 흐름, API, 오류 처리 설계 |
+| [CHECK.md](CHECK.md) | 설계 대비 점검, 성공 기준 측정, 보안 점검 결과 |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 직접 실행해 보기
 
-To learn more about Next.js, take a look at the following resources:
+1. 저장소를 내려받고 패키지를 설치합니다.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```bash
+   npm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. 프로젝트 루트에 `.env.local` 파일을 만들고 OpenAI API 키를 적습니다. (이 파일은 git에 올라가지 않습니다)
 
-## Deploy on Vercel
+   ```
+   OPENAI_API_KEY=여기에_본인_키
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. 개발 서버를 띄우고 http://localhost:3000 에 접속합니다.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   npm run dev
+   ```
+
+| 명령어 | 하는 일 |
+|---|---|
+| `npm run dev` | 개발 서버 |
+| `npm run build` | 배포용 빌드 |
+| `npm run lint` | 코드 검사 |
+
+---
+
+## 보안과 비용
+
+- OpenAI 키는 서버에서만 읽으며 브라우저로 보내지 않습니다
+- 한 사람당 10분에 5번, 서버 전체로도 요청 횟수를 제한합니다
+- 입력 길이 제한, 업로드 파일 형식 확인, 보안 헤더(다른 사이트의 틀 안에 넣기 금지 등)를 적용했습니다
+- 공유 링크의 내용은 서버로 전송되지 않으며, 열 때 모양과 링크 주소를 다시 검사합니다
+
+자세한 점검 결과는 [CHECK.md](CHECK.md)에 있습니다.
+
+---
+
+## 알려진 한계
+
+- 흐리게 찍힌 사진은 빈티지를 잘못 읽을 수 있습니다 (그럴 때는 다시 찍어 달라고 안내합니다)
+- 결과가 나오기까지 보통 30~50초가 걸립니다 (웹 검색 포함)
+- AI가 정리한 정보이므로, 중요한 구매 결정 전에는 출처 링크를 한 번 확인해 주세요

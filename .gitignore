@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# 작업용 폴더 — 지울 파일(비밀 키가 든 파일 포함)과 bkit 작업 기록이라 커밋하지 않는다 (2026-09-18 보안 점검)
+trash-can/
+.bkit/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
